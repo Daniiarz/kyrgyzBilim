@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:12-alpine
+    container_name: postgres_bilim
+    environment:
+      - POSTGRES_PASSWORD=dbCXeDTR5vFhZkxRCq
+      - POSTGRES_DB=kyrgyzBilim
+      - POSTGRES_USER=kyrgyzBilim
+    volumes:
+      - data:/var/lib/postgresql/data
+    ports:
+      - 5555:5432
+    restart: always
+
+
+volumes:
+  data:

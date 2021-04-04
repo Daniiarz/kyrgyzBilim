@@ -3,7 +3,6 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"golang.org/x/crypto/openpgp/errors"
 	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/service"
 	"net/http"
@@ -14,19 +13,28 @@ type LoginData struct {
 	Password    string `json:"password" binding:"required"`
 }
 
+type invalidArgument struct {
+	Field string `json:"field"`
+	Tag   string `json:"tag"`
+}
+
 func Register(c *gin.Context) {
 	user := &entity.User{}
-	if err := c.ShouldBindJSON(&user); err != nil {
-
-		var invalidArgs []errors.InvalidArgumentError
-
+	if err := c.ShouldBind(user); err != nil {
+		var invalidArgs []invalidArgument
 		if errs, ok := err.(validator.ValidationErrors); ok {
-			for _, err := range errs{
-				invalidArgs =
+			for _, err := range errs {
+				invalidArgs = append(invalidArgs, invalidArgument{
+					Field: err.Field(),
+					Tag:   err.Tag(),
+				})
 			}
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid request parameters. See invalid_args",
+				"invalid_args": invalidArgs,
+			})
+			return
 		}
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
 	}
 	err := service.RegisterUser(user)
 	if err != nil {
@@ -34,7 +42,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "user created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "user registered successfully"})
 }
 
 func Login(c *gin.Context) {

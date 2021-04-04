@@ -21,7 +21,7 @@ func DataBind(ctx *gin.Context, obj interface{}) (interface{}, bool) {
 				})
 			}
 			return gin.H{
-				"error": "Invalid request parameters. See invalid_args",
+				"error":        "Invalid request parameters. See invalid_args",
 				"invalid_args": invalidArgs}, false
 		}
 	}

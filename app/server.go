@@ -25,7 +25,6 @@ func main() {
 	}
 	v1 := r.router.Group("v1/")
 	routes.UserRoutes(v1)
-
 	r.Run(":8080")
 }
 

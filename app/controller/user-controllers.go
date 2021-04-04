@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/service"
 	"net/http"
@@ -13,30 +12,15 @@ type LoginData struct {
 	Password    string `json:"password" binding:"required"`
 }
 
-type invalidArgument struct {
-	Field string `json:"field"`
-	Tag   string `json:"tag"`
-}
-
 func Register(c *gin.Context) {
 	user := &entity.User{}
-	if err := c.ShouldBind(user); err != nil {
-		var invalidArgs []invalidArgument
-		if errs, ok := err.(validator.ValidationErrors); ok {
-			for _, err := range errs {
-				invalidArgs = append(invalidArgs, invalidArgument{
-					Field: err.Field(),
-					Tag:   err.Tag(),
-				})
-			}
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid request parameters. See invalid_args",
-				"invalid_args": invalidArgs,
-			})
-			return
-		}
+	obj, ok := service.DataBind(c, user)
+	if !ok {
+		c.JSON(http.StatusBadRequest, obj.(gin.H))
+		return
 	}
-	err := service.RegisterUser(user)
+	parsedUser := obj.(*entity.User)
+	err := service.RegisterUser(parsedUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -46,12 +30,14 @@ func Register(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	loginInfo := &LoginData{}
-	if err := c.ShouldBindJSON(&loginInfo); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "wrong credentials"})
+	login := &LoginData{}
+	obj, ok := service.DataBind(c, login)
+	if !ok {
+		c.JSON(http.StatusBadRequest, obj.(gin.H))
 		return
 	}
-	tokens, err := service.SingIn(loginInfo.PhoneNumber, loginInfo.Password)
+	parsedLogin := obj.(*LoginData)
+	tokens, err := service.SingIn(parsedLogin.PhoneNumber, parsedLogin.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -61,11 +47,13 @@ func Login(c *gin.Context) {
 
 func Refresh(c *gin.Context) {
 	tokens := &service.AuthTokens{}
-	if err := c.ShouldBindJSON(&tokens); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "wrong tokens"})
+	obj, ok := service.DataBind(c, tokens)
+	if !ok {
+		c.JSON(http.StatusBadRequest, obj.(gin.H))
 		return
 	}
-	err := service.RefreshAccessToken(tokens)
+	parsedTokens := obj.(*service.AuthTokens)
+	err := service.RefreshAccessToken(parsedTokens)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

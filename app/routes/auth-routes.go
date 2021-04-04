@@ -10,6 +10,6 @@ func UserRoutes(rg *gin.RouterGroup){
 	{
 		group.POST("register", controller.Register)
 		group.POST("login", controller.Login)
-		group.POST("test", controller.TestHashing)
+		group.POST("refresh", controller.Refresh)
 	}
 }

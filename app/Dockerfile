@@ -6,10 +6,10 @@ WORKDIR /app
 
 RUN go clean --modcache
 RUN go mod download
-RUN CGO_ENABLE=0 GOOS=liux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLE=0 GOOS=liux go build -tags=jsoniter -a -installsuffix cgo -o main .
 
 FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+RUN apk add --no-cache ca-certificates
 RUN apk add --no-cache git make musl-dev go
 COPY --from=builder /app/main .
 

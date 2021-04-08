@@ -1,8 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
+	"path/filepath"
+	"strings"
 )
 
 type invalidArgument struct {
@@ -26,4 +30,33 @@ func DataBind(ctx *gin.Context, obj interface{}) (interface{}, bool) {
 		}
 	}
 	return obj, true
+}
+
+func UploadHandler(ctx *gin.Context, field string) string {
+	file, err := ctx.FormFile(field)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	extension := filepath.Ext(file.Filename)
+	newFileName := GetUuid() + extension
+	fmt.Println(GetMediaRoot("profile"))
+	err = ctx.SaveUploadedFile(file, GetMediaRoot("profile")+newFileName)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return newFileName
+}
+
+func GetUuid() string {
+	uuidWithHyphen := uuid.New()
+	newUuid := strings.Replace(uuidWithHyphen.String(), "-", "", -1)
+	return newUuid
+}
+
+func GetMediaRoot(folder string) string {
+	path, _ := filepath.Abs("./server.go")
+	mediaRoot := filepath.Dir(path)
+	return fmt.Sprintf("%v/%v/%v/", mediaRoot, "media", folder)
 }

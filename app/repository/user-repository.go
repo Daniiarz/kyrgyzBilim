@@ -37,9 +37,6 @@ func (db *repo) GetUserByPhone(phone string) *entity.User {
 func (db *repo) GetUserById(id int) *entity.User {
 	user := &entity.User{}
 	database.DB.Where("id = ?", id).First(&user)
-	if user.Id == 0 {
-		return nil
-	}
 	return user
 }
 

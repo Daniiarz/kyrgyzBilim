@@ -1,26 +1,59 @@
 version: "3.8"
 
 services:
-  db:
+  reverse-proxy:
+    image: traefik:v2.2
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml
+
+  postgres:
     image: postgres:12-alpine
     container_name: postgres_bilim
+    ports:
+      - "5555:5432"
     environment:
       - POSTGRES_PASSWORD=dbCXeDTR5vFhZkxRCq
       - POSTGRES_DB=kyrgyzBilim
       - POSTGRES_USER=kyrgyzBilim
     volumes:
-      - data:/var/lib/postgresql/data
-    ports:
-      - 5555:5432
+      - postgres-data:/var/lib/postgresql/data
     restart: always
 
   app:
     build:
-      context: app
-      dockerfile: Dockerfile
+      target: builder
+      context: app/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.rule=Host(`localhost`)"
+      - "traefik.http.services.app.loadbalancer.server.port=8080"
+    environment:
+      - ENV=dev
+    volumes:
+      - ./app:/go/src/app
+      - media:/go/src/app/media/
+    depends_on:
+      - postgres
+      - reverse-proxy
+    command: reflex -r "\.go$$" -s -- sh -c "go run ./"
 
   nginx:
-    image:
+    image: nginx:alpine
+    volumes:
+      - media:/www/data/media/
+      - ./config/static_server.nginx:/config/nginx/site-confs/default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.rule=Host(`localhost`) && Path(`*/media*`)"
+      - "traefik.http.services.app.loadbalancer.server.port=80"
 
 volumes:
-  data:
+  postgres-data:
+  media:

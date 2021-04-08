@@ -1,0 +1,21 @@
+server {
+    listen 80 http2 default_server;
+    listen [::]:80 http2 default_server;
+
+    server_name _;
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types *;
+    gzip_disable "MSIE [1-6]\.";
+
+    location /media {
+        sendfile     on;
+        tcp_nopush   on;
+        tcp_nodelay  on;
+
+        alias /www/data/media/;
+    }
+
+}

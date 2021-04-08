@@ -77,9 +77,7 @@ func RefreshAccessToken(tokens *AuthTokens) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(err)
 	tokens.AccessToken = newAccessToken(user)
-
 	return nil
 }
 
@@ -90,6 +88,7 @@ func ValidateToken(token string) (*entity.User, error) {
 		}
 		return []byte(secretKey), nil
 	})
+
 	if err != nil {
 		return nil, err
 	}

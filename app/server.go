@@ -23,6 +23,7 @@ func main() {
 	r := globalRoutes{
 		router: gin.Default(),
 	}
+	r.router.MaxMultipartMemory = 8 << 20
 	v1 := r.router.Group("v1/")
 	routes.UserRoutes(v1)
 	r.Run(":8080")
@@ -59,7 +60,7 @@ func (r globalRoutes) Run(port string) {
 	// catching ctx.Done(). timeout of 5 seconds.
 	select {
 	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
+		log.Println("timeout of 3 seconds.")
 	}
 	log.Println("Server exiting")
 

@@ -15,6 +15,8 @@ type LoginData struct {
 func Register(c *gin.Context) {
 	user := &entity.User{}
 	obj, ok := service.DataBind(c, user)
+	file, _ := c.FormFile("profile_picture")
+
 	if !ok {
 		c.JSON(http.StatusBadRequest, obj.(gin.H))
 		return

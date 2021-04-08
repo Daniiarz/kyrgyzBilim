@@ -1,22 +1,26 @@
-FROM golang:1.16 as builder
+FROM golang:1.16-alpine as builder
 
-RUN mkdir /app
-ADD . /app
-WORKDIR /app
+WORKDIR /go/src/app
 
-RUN go clean --modcache
+ENV GO111MODULE=on
+
+RUN go get github.com/cespare/reflex
+
+COPY go.mod .
+COPY go.sum .
+
 RUN go mod download
-RUN CGO_ENABLE=0 GOOS=liux go build -tags=jsoniter -a -installsuffix cgo -o main .
+
+COPY . .
+
+RUN go build -o ./run .
 
 FROM alpine:latest
-RUN apk add --no-cache ca-certificates
-RUN apk add --no-cache git make musl-dev go
-COPY --from=builder /app/main .
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
 
-ENV GOROOT /user/lib/go
-ENV GOPATH /go
-ENV PATH /go/bin:$PATH
+#Copy executable from builder
+COPY --from=builder /go/src/app/run .
 
-RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
-EXPOSE 80
-CMD ["./main"]
+EXPOSE 8080
+CMD ["./run"]

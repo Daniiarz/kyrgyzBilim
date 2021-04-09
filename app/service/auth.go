@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/repository"
+	"os"
 	"strconv"
 	"time"
 )
@@ -16,7 +17,7 @@ type AuthTokens struct {
 	RefreshToken string `json:"refresh_token,omitempty"`
 }
 
-var secretKey = "LolKek123"
+var secretKey = os.Getenv("SECRET_KEY")
 
 func SingIn(phone, password string) (*AuthTokens, error) {
 	connection := repository.NewUserRepository()

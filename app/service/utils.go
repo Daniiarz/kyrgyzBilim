@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -40,8 +41,7 @@ func UploadHandler(ctx *gin.Context, field string) string {
 	}
 	extension := filepath.Ext(file.Filename)
 	newFileName := GetUuid() + extension
-	fmt.Println(GetMediaRoot("profile"))
-	err = ctx.SaveUploadedFile(file, GetMediaRoot("profile")+newFileName)
+	err = ctx.SaveUploadedFile(file, GetMediaRoot()+newFileName)
 	if err != nil {
 		fmt.Println(err)
 		return ""
@@ -55,8 +55,13 @@ func GetUuid() string {
 	return newUuid
 }
 
-func GetMediaRoot(folder string) string {
+func GetMediaRoot() string {
 	path, _ := filepath.Abs("./server.go")
 	mediaRoot := filepath.Dir(path)
-	return fmt.Sprintf("%v/%v/%v/", mediaRoot, "media", folder)
+	return fmt.Sprintf("%v/%v/", mediaRoot, "media")
+}
+
+func GetMediaUrl() string {
+
+	return os.Getenv("MEDIA_URL")
 }

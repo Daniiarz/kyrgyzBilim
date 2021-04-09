@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v2.2
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: always
+
+
+  nginx:
+    image: nginx:apline
+    networks:
+      - overlay
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 1
+
+  app:
+    image:
+    networks:
+      - overlay
+      - elastic
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+  db:
+    image: postgres:12-alpine
+    networks:
+      - overlay
+    deploy:
+      restart_policy:
+        condition: always
+
+networks:
+  overlay:
+    driver: overlay

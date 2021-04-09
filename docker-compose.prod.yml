@@ -14,34 +14,28 @@ services:
   postgres:
     image: postgres:12-alpine
     container_name: postgres_bilim
-    ports:
-      - "5555:5432"
-    environment:
-      - POSTGRES_PASSWORD=dbCXeDTR5vFhZkxRCq
-      - POSTGRES_DB=kyrgyzBilim
-      - POSTGRES_USER=kyrgyzBilim
+    env_file:
+      - .env
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: always
 
   app:
     build:
-      target: builder
       context: app/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.entrypoints=http"
-      - "traefik.http.routers.app.rule=Host(`localhost`)"
+      - "traefik.http.routers.app.rule=PathPrefix(`/`)"
       - "traefik.http.services.app.loadbalancer.server.port=8080"
-    environment:
-      - ENV=dev
+    env_file:
+      - .env
     volumes:
       - ./app:/go/src/app
       - media:/go/src/app/media/
     depends_on:
       - postgres
       - reverse-proxy
-    command: reflex -r "\.go$$" -s -- sh -c "go run ./"
 
   nginx:
     image: nginx:alpine
@@ -51,7 +45,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nginx.entrypoints=http"
-      - "traefik.http.routers.nginx.rule=Host(`localhost`) && PathPrefix(`/media`)"
+      - "traefik.http.routers.nginx.rule=PathPrefix(`/media`)"
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
 
 volumes:

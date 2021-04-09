@@ -1,8 +1,8 @@
 server {
-    listen 80 http2 default_server;
-    listen [::]:80 http2 default_server;
+    listen 80 http2 ;
+    listen [::]:80 http2 ;
 
-    server_name _;
+    server_name _ ;
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
@@ -10,12 +10,13 @@ server {
     gzip_types *;
     gzip_disable "MSIE [1-6]\.";
 
-    location /media {
-        sendfile     on;
-        tcp_nopush   on;
-        tcp_nodelay  on;
+    sendfile     on;
+    tcp_nopush   on;
+    tcp_nodelay  on;
+    autoindex    on;
 
-        alias /www/data/media/;
+    location / {
+        root /usr/share/nginx/html/media;
     }
 
 }

@@ -5,11 +5,11 @@ import (
 	"kyrgyz-bilim/controller"
 )
 
-func UserRoutes(rg *gin.RouterGroup){
-	group := rg.Group("auth/")
+func AuthRouters(rg *gin.RouterGroup) {
+	group := rg.Group("/auth")
 	{
-		group.POST("register", controller.Register)
-		group.POST("login", controller.Login)
-		group.POST("refresh", controller.Refresh)
+		group.POST("/register", controller.Register)
+		group.POST("/login", controller.Login)
+		group.POST("/refresh", controller.Refresh)
 	}
 }

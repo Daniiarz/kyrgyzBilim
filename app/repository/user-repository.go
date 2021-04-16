@@ -40,10 +40,10 @@ func (db *repo) GetUserById(id int) *entity.User {
 	return user
 }
 
-func (db *repo) All() []*entity.User{
-	var videos []*entity.User
-	db.connection.Find(&videos)
-	return videos
+func (db *repo) All() []*entity.User {
+	var users []*entity.User
+	db.connection.Find(&users)
+	return users
 }
 
 func (db *repo) Delete(user *entity.User) {
@@ -55,5 +55,5 @@ func (db *repo) Update(user *entity.User) {
 }
 
 func (db *repo) Create(user *entity.User) {
-	 db.connection.Save(user)
+	db.connection.Save(user)
 }

@@ -24,4 +24,6 @@ WORKDIR /root/
 #Copy executable from builder
 COPY --from=builder /go/src/app/run .
 
+ENV GIN_MODE=release
+
 CMD ["./run"]

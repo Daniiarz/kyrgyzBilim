@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"os"
 	"path/filepath"
 	"strings"
 )
@@ -59,9 +58,4 @@ func GetMediaRoot() string {
 	path, _ := filepath.Abs("./server.go")
 	mediaRoot := filepath.Dir(path)
 	return fmt.Sprintf("%v/%v/", mediaRoot, "media")
-}
-
-func GetMediaUrl() string {
-
-	return os.Getenv("MEDIA_URL")
 }

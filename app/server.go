@@ -25,7 +25,9 @@ func main() {
 	}
 	r.router.MaxMultipartMemory = 8 << 20
 	v1 := r.router.Group("v1/")
-	routes.UserRoutes(v1)
+	routes.AuthRouters(v1)
+	routes.UserRouters(v1)
+	routes.CourseRoutes(v1)
 	r.Run(":8080")
 }
 

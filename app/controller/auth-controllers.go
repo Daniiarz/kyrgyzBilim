@@ -21,7 +21,7 @@ func Register(c *gin.Context) {
 	}
 	parsedUser := obj.(*entity.User)
 	fileUuid := service.UploadHandler(c, "profile_picture")
-	user.ProfilePicture = "media/"+fileUuid
+	user.ProfilePicture = "media/" + fileUuid
 	err := service.RegisterUser(parsedUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

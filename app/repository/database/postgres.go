@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"kyrgyz-bilim/entity"
+	"os"
 )
 
 var DB *gorm.DB
@@ -18,14 +19,14 @@ type DBConfig struct {
 }
 
 func BuildDBConfig() *DBConfig {
-	dbConfig := DBConfig{
-		Host:     "postgres",
+	dbConfig := &DBConfig{
+		Host:     os.Getenv("POSTGRES_HOST"),
 		Port:     5432,
-		User:     "kyrgyzBilim",
-		DBName:   "kyrgyzBilim",
-		Password: "dbCXeDTR5vFhZkxRCq",
+		User:     os.Getenv("POSTGRES_USER"),
+		DBName:   os.Getenv("POSTGRES_DB"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
 	}
-	return &dbConfig
+	return dbConfig
 }
 
 func DbURL(dbConfig *DBConfig) string {
@@ -50,5 +51,9 @@ func Connect() *gorm.DB {
 }
 
 func SetupDB(db *gorm.DB) {
-	db.AutoMigrate(&entity.User{})
+	err := db.AutoMigrate(&entity.User{})
+	err = db.AutoMigrate(&entity.Course{})
+	if err != nil {
+		panic("Can't migrate database")
+	}
 }

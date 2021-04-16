@@ -31,7 +31,6 @@ services:
     env_file:
       - .env
     volumes:
-      - ./app:/go/src/app
       - media:/go/src/app/media/
     depends_on:
       - postgres

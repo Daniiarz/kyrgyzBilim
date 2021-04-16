@@ -33,8 +33,8 @@ services:
       - "traefik.http.routers.app.entrypoints=http"
       - "traefik.http.routers.app.rule=Host(`localhost`)"
       - "traefik.http.services.app.loadbalancer.server.port=8080"
-    environment:
-      - ENV=dev
+    env_file:
+      - .env
     volumes:
       - ./app:/go/src/app
       - media:/go/src/app/media/

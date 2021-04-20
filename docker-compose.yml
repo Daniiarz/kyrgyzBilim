@@ -43,6 +43,16 @@ services:
       - reverse-proxy
     command: reflex -r "\.go$$" -s -- sh -c "go run ./"
 
+  admin:
+    build:
+      context: admin/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.entrypoints=http"
+      - "traefik.http.routers.app.rule=Host(`localhost`) && PathPrefix(`/admin`)"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
+
+
   nginx:
     image: nginx:alpine
     volumes:

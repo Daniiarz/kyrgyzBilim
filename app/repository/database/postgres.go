@@ -42,17 +42,18 @@ func DbURL(dbConfig *DBConfig) string {
 
 func Connect() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(DbURL(BuildDBConfig())), &gorm.Config{})
-
 	if err != nil {
 		panic(err.Error())
 	}
-
 	return db
 }
 
 func SetupDB(db *gorm.DB) {
 	err := db.AutoMigrate(&entity.User{})
 	err = db.AutoMigrate(&entity.Course{})
+	err = db.AutoMigrate(&entity.Section{})
+	err = db.AutoMigrate(&entity.Topic{})
+	err = db.AutoMigrate(&entity.SubTopic{})
 	if err != nil {
 		panic("Can't migrate database")
 	}

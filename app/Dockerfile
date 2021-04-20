@@ -1,12 +1,13 @@
 FROM golang:1.16-alpine as builder
 
+RUN apk --no-cache add gcc musl-dev
+
 WORKDIR /go/src/app
 
 ENV GO111MODULE=on
 
 RUN go get github.com/cespare/reflex
 RUN go get github.com/json-iterator/go
-
 
 COPY go.mod .
 COPY go.sum .

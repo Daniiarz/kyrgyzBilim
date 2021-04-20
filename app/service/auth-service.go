@@ -18,9 +18,10 @@ type AuthTokens struct {
 }
 
 var secretKey = os.Getenv("SECRET_KEY")
+var connection repository.UserRepository
 
 func SingIn(phone, password string) (*AuthTokens, error) {
-	connection := repository.NewUserRepository()
+	connection = repository.NewUserRepository()
 	user := connection.GetUserByPhone(phone)
 	if user == nil {
 		return &AuthTokens{}, errors.New("no user found")
@@ -34,7 +35,7 @@ func SingIn(phone, password string) (*AuthTokens, error) {
 }
 
 func RegisterUser(user *entity.User) error {
-	connection := repository.NewUserRepository()
+	connection = repository.NewUserRepository()
 	password, _ := bcrypt.GenerateFromPassword([]byte(user.Password+secretKey), bcrypt.DefaultCost)
 	user.Password = string(password)
 	connection.Create(user)
@@ -95,7 +96,7 @@ func ValidateToken(token string) (*entity.User, error) {
 	}
 
 	if claims, ok := authToken.Claims.(jwt.MapClaims); ok && authToken.Valid {
-		connection := repository.NewUserRepository()
+		connection = repository.NewUserRepository()
 		id, err := strconv.Atoi(claims["iss"].(string))
 		if err != nil {
 			return nil, errors.New("not a valid valid token")

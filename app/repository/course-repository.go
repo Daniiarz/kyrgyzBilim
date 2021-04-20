@@ -8,6 +8,9 @@ import (
 
 type CourseRepository interface {
 	All() []*entity.Course
+	GetByID(id int) *entity.Course
+	GetSections(id int) []*entity.Section
+	GetTopics(id int) []*entity.Topic
 }
 
 type courseRepository struct {
@@ -24,4 +27,22 @@ func (db *courseRepository) All() []*entity.Course {
 	var courses []*entity.Course
 	db.connection.Find(&courses)
 	return courses
+}
+
+func (db courseRepository) GetByID(id int) *entity.Course {
+	course := &entity.Course{}
+	db.connection.Where("id = ?", id).First(&course)
+	return course
+}
+
+func (db courseRepository) GetSections(id int) []*entity.Section {
+	var sections []*entity.Section
+	db.connection.Where("course_id = ?", id).Preload("Topic").Find(&sections)
+	return sections
+}
+
+func (db courseRepository) GetTopics(id int) []*entity.Topic {
+	var topics []*entity.Topic
+	db.connection.Where("section_id = ?", id).Preload("SubTopic").Find(&topics)
+	return topics
 }

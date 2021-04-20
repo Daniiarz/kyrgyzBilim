@@ -1,7 +1,5 @@
 FROM golang:1.16-alpine as builder
 
-RUN apk --no-cache add gcc musl-dev
-
 WORKDIR /go/src/app
 
 ENV GO111MODULE=on

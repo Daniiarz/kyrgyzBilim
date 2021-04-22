@@ -43,3 +43,11 @@ func (Course) TableName() string {
 func (Section) TableName() string {
 	return "sections"
 }
+
+func (Topic) TableName() string {
+	return "topics"
+}
+
+func (SubTopic) TableName() string {
+	return "sub_topics"
+}

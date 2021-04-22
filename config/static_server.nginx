@@ -19,4 +19,8 @@ server {
         root /usr/share/nginx/html/media;
     }
 
+    location /static {
+        root /usr/share/nginx/html/static;
+    }
+
 }

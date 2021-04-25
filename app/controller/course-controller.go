@@ -15,7 +15,7 @@ func ListCourses(c *gin.Context) {
 
 func ListSections(c *gin.Context) {
 	connection := repository.NewCourseRepository()
-	id := c.Param("courseId")
+	id := c.Param("id")
 	if courseId, err := strconv.Atoi(id); err == nil {
 		sections := connection.GetSections(courseId)
 		c.JSON(http.StatusOK, sections)
@@ -26,10 +26,21 @@ func ListSections(c *gin.Context) {
 
 func ListTopics(c *gin.Context) {
 	connection := repository.NewCourseRepository()
-	id := c.Param("sectionId")
+	id := c.Param("id")
 	if sectionId, err := strconv.Atoi(id); err == nil {
 		topics := connection.GetTopics(sectionId)
 		c.JSON(http.StatusOK, topics)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be integer"})
+	}
+}
+
+func DetailedTopic(c *gin.Context) {
+	connection := repository.NewCourseRepository()
+	id := c.Param("id")
+	if sectionId, err := strconv.Atoi(id); err == nil {
+		topic := connection.GetTopic(sectionId)
+		c.JSON(http.StatusOK, topic)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be integer"})
 	}

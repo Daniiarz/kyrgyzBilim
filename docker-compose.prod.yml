@@ -47,6 +47,12 @@ services:
       - "traefik.http.routers.nginx.rule=PathPrefix(`/media`)"
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
 
+  admin:
+    volumes: [
+      "static:/usr/src/admin/static/"
+    ]
+    command: sh -c "python manage.py collectstatic --noinput && gunicorn -w 3 -b 0.0.0.0:8000 admin.wsgi"
+
 volumes:
   postgres-data:
   media:

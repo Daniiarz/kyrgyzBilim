@@ -1,5 +1,7 @@
 package entity
 
+type URL string
+
 type Course struct {
 	ID          int    `json:"id,omitempty"`
 	Name        string `json:"name,omitempty"`
@@ -11,7 +13,7 @@ type Section struct {
 	Course   Course  `json:"-" gorm:"foreignKey:CourseID"`
 	CourseID int     `json:"-" gorm:"course_id"`
 	Name     string  `json:"name,omitempty" gorm:"name"`
-	Icon     string  `json:"icon,omitempty" gorm:"icon"`
+	Icon     URL     `json:"icon,omitempty" gorm:"icon"`
 	Topic    []Topic `json:"topics"`
 }
 
@@ -21,9 +23,9 @@ type Topic struct {
 	Section        Section    `json:"-" gorm:"foreignKey:SectionID"`
 	Name           string     `json:"name,omitempty"`
 	TranslatedName string     `json:"translated_name,omitempty" gorm:"translated_name"`
-	Icon           string     `json:"icon,omitempty"`
+	Icon           URL        `json:"icon,omitempty"`
 	Type           string     `json:"type,omitempty"`
-	SubTopic       []SubTopic `json:"sub_topics"`
+	SubTopic       []SubTopic `json:"sub_topics,omitempty"`
 }
 
 type SubTopic struct {
@@ -32,8 +34,8 @@ type SubTopic struct {
 	Topic          Topic  `json:"-" gorm:"foreignKey:TopicId"`
 	Text           string `json:"text,omitempty"`
 	TranslatedText string `json:"translated_text,omitempty"`
-	Audio          string `json:"audio,omitempty"`
-	Image          string `json:"image,omitempty"`
+	Audio          URL    `json:"audio,omitempty"`
+	Image          URL    `json:"image,omitempty"`
 }
 
 func (Course) TableName() string {

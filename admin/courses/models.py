@@ -45,8 +45,8 @@ class SubTopic(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='subtopics')
     text = models.TextField()
     translated_text = models.TextField()
-    audio = models.FileField('audio/')
-    image = models.FileField('subtopic/')
+    audio = models.FileField(upload_to='audio/')
+    image = models.FileField(upload_to='subtopic/')
 
     class Meta:
         db_table = 'sub_topics'

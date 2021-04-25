@@ -1,6 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import PermissionsMixin
 
 from django.db import models
 
@@ -35,7 +34,7 @@ class UserManger(BaseUserManager):
         return self._create_user(phone_number, password, **extra_fields)
 
 
-class User(PermissionsMixin, AbstractBaseUser):
+class User(AbstractBaseUser):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     phone_number = models.CharField(max_length=255, unique=True)
@@ -54,3 +53,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     class Meta:
         db_table = 'users'
         managed = False
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser

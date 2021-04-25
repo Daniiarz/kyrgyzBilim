@@ -6,10 +6,11 @@ import (
 )
 
 func CourseRoutes(rg *gin.RouterGroup) {
-	group := rg.Group("/courses")
+	group := rg.Group("")
 	{
-		group.GET("", controller.ListCourses)
-		group.GET("/:courseId/sections", controller.ListSections)
-		group.GET("/:courseId/sections/:sectionId/topics", controller.ListTopics)
+		group.GET("courses", controller.ListCourses)
+		group.GET("courses/:id/sections", controller.ListSections)
+		group.GET("sections/:id/topics", controller.ListTopics)
+		group.GET("topics/:id", controller.DetailedTopic)
 	}
 }

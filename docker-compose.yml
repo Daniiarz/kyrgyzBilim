@@ -49,6 +49,7 @@ services:
     volumes:
       - ./admin:/usr/src/admin/
       - static:/usr/src/admin/static/
+      - media:/usr/src/admin/media/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.admin.entrypoints=http"
@@ -61,8 +62,8 @@ services:
   nginx:
     image: nginx:alpine
     volumes:
-      - media:/usr/share/nginx/html/media:ro
-      - static:/usr/share/nginx/html/static:ro
+      - media:/usr/share/nginx/html/media
+      - static:/usr/share/nginx/html/static
       - ./config/static_server.nginx:/config/nginx/site-confs/default
     labels:
       - "traefik.enable=true"

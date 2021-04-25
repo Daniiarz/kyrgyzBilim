@@ -11,6 +11,7 @@ type CourseRepository interface {
 	GetByID(id int) *entity.Course
 	GetSections(id int) []*entity.Section
 	GetTopics(id int) []*entity.Topic
+	GetTopic(id int) *entity.Topic
 }
 
 type courseRepository struct {
@@ -43,6 +44,12 @@ func (db courseRepository) GetSections(id int) []*entity.Section {
 
 func (db courseRepository) GetTopics(id int) []*entity.Topic {
 	var topics []*entity.Topic
-	db.connection.Where("section_id = ?", id).Preload("SubTopic").Find(&topics)
+	db.connection.Where("section_id = ?", id).Find(&topics)
 	return topics
+}
+
+func (db courseRepository) GetTopic(id int) *entity.Topic {
+	topic := &entity.Topic{}
+	db.connection.Where("id = ?", id).Preload("SubTopic").Find(&topic)
+	return topic
 }

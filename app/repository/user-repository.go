@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/repository/database"
+	"time"
 )
 
 type UserRepository interface {
@@ -55,5 +56,10 @@ func (db *userRepository) Update(user *entity.User) {
 }
 
 func (db *userRepository) Create(user *entity.User) {
+	user.IsActive = true
+	user.IsStaff = true
+	user.IsSuperuser = true
+	user.DateJoined = time.Now()
+	user.LastLogin = time.Now()
 	db.connection.Save(user)
 }

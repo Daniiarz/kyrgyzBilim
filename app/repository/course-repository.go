@@ -7,10 +7,10 @@ import (
 )
 
 type CourseRepository interface {
-	All() []*entity.Course
+	All() []entity.Course
 	GetByID(id int) *entity.Course
 	GetSections(id int) []*entity.Section
-	GetTopics(id int) []*entity.Topic
+	GetTopics(id int) []entity.Topic
 	GetTopic(id int) *entity.Topic
 }
 
@@ -24,8 +24,8 @@ func NewCourseRepository() CourseRepository {
 	}
 }
 
-func (db *courseRepository) All() []*entity.Course {
-	var courses []*entity.Course
+func (db *courseRepository) All() []entity.Course {
+	var courses []entity.Course
 	db.connection.Find(&courses)
 	return courses
 }
@@ -42,8 +42,8 @@ func (db courseRepository) GetSections(id int) []*entity.Section {
 	return sections
 }
 
-func (db courseRepository) GetTopics(id int) []*entity.Topic {
-	var topics []*entity.Topic
+func (db courseRepository) GetTopics(id int) []entity.Topic {
+	var topics []entity.Topic
 	db.connection.Where("section_id = ?", id).Find(&topics)
 	return topics
 }

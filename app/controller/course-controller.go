@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"kyrgyz-bilim/repository"
+	"kyrgyz-bilim/service"
 	"net/http"
 	"strconv"
 )
@@ -25,10 +26,10 @@ func ListSections(c *gin.Context) {
 }
 
 func ListTopics(c *gin.Context) {
-	connection := repository.NewCourseRepository()
 	id := c.Param("id")
 	if sectionId, err := strconv.Atoi(id); err == nil {
-		topics := connection.GetTopics(sectionId)
+		newService := service.NewCourseService()
+		topics := newService.TopicsById(sectionId)
 		c.JSON(http.StatusOK, topics)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be integer"})
@@ -36,10 +37,10 @@ func ListTopics(c *gin.Context) {
 }
 
 func DetailedTopic(c *gin.Context) {
-	connection := repository.NewCourseRepository()
 	id := c.Param("id")
 	if sectionId, err := strconv.Atoi(id); err == nil {
-		topic := connection.GetTopic(sectionId)
+		newService := service.NewCourseService()
+		topic := newService.TopicsById(sectionId)
 		c.JSON(http.StatusOK, topic)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be integer"})

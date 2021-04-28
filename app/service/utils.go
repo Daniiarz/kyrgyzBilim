@@ -58,16 +58,3 @@ func GetMediaRoot() string {
 	mediaRoot := "/go/src/app"
 	return fmt.Sprintf("%v/%v/", mediaRoot, "media")
 }
-
-//func PreMarshallingHook(arr []entity.Topic) {
-//	for _, val := range arr {
-//		v := reflect.ValueOf(val)
-//		typeOfS := v.Type()
-//		for i := 0; i < v.NumField(); i++ {
-//			fmt.Printf("%v\n", typeOfS.Field(i).Type)
-//			if typeOfS.Field(i).Type.String() == "entity.URL"{
-//				v.Field(i).Set(entity.URL("a"))
-//			}
-//		}
-//	}
-//}

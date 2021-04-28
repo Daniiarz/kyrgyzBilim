@@ -6,13 +6,26 @@ import (
 )
 
 type CourseService interface {
-	AllCourses() []*entity.Course
+	AllCourses() []entity.Course
+	TopicsById(id int) []entity.Topic
 }
 
 type courseService struct {
 	repository repository.CourseRepository
 }
 
-func (s courseService) AllCourses() []*entity.Course {
+func NewCourseService() CourseService {
+	repo := repository.NewCourseRepository()
+	return courseService{
+		repository: repo,
+	}
+}
+
+func (s courseService) AllCourses() []entity.Course {
 	return s.repository.All()
+}
+
+func (s courseService) TopicsById(id int) []entity.Topic {
+	topics := s.repository.GetTopics(id)
+	return topics
 }

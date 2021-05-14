@@ -17,3 +17,6 @@
 # vendor/
 .idea/
 .env
+
+app/
+admin/

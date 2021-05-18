@@ -63,7 +63,7 @@ services:
         condition: any
 
   app:
-    image: 127.0.0.1:5000/app
+    image: registry.digitalocean.com/kyrgyz-bilim-registry/kyrgyz-bilim-api/api:latest
     build:
       target: prod
       context: app/
@@ -117,7 +117,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   admin:
-    image: 127.0.0.1:5000/admin
+    image: registry.digitalocean.com/kyrgyz-bilim-registry/kyrgyz-bilim-admin/admin:latest
     build:
       context: admin/
     secrets:

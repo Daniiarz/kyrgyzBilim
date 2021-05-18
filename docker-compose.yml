@@ -9,7 +9,7 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/traefik.yaml:/etc/traefik/traefik.yaml
+      - ./config/traefik_dev.yml:/etc/traefik/traefik.yaml
 
   postgres:
     image: postgres:12-alpine
@@ -24,7 +24,9 @@ services:
       - postgres-data:/var/lib/postgresql/data
     restart: always
 
+
   app:
+    image: 127.0.0.1:5000/app
     build:
       target: builder
       context: app/
@@ -33,31 +35,32 @@ services:
       - "traefik.http.routers.app.entrypoints=http"
       - "traefik.http.routers.app.rule=Host(`localhost`)"
       - "traefik.http.services.app.loadbalancer.server.port=8080"
-    env_file:
-      - .env
     volumes:
       - ./app:/go/src/app
       - media:/go/src/app/media/
+      - ./secrets/.env:/go/src/app/.env
     depends_on:
       - postgres
       - reverse-proxy
     command: reflex -r "\.go$$" -s -- sh -c "go run ./"
 
   admin:
+    image: 127.0.0.1:5000/admin
     build:
       context: admin/
     volumes:
       - ./admin:/usr/src/admin/
       - static:/usr/src/admin/static/
       - media:/usr/src/admin/media/
+      - ./secrets/.env:/usr/src/admin/.env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.admin.entrypoints=http"
       - "traefik.http.routers.admin.rule=Host(`localhost`) && PathPrefix(`/admin`)"
       - "traefik.http.services.admin.loadbalancer.server.port=8000"
-    env_file:
-      - .env
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - postgres
 
   nginx:
     image: nginx:alpine

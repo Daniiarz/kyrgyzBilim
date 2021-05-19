@@ -57,7 +57,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.nginx.entrypoints=http"
-        - "traefik.http.routers.nginx.rule=Host(`localhost`) && PathPrefix(`/media`, `/static`)"
+        - "traefik.http.routers.nginx.rule=Host(`159.89.29.83`) && PathPrefix(`/media`, `/static`)"
         - "traefik.http.services.nginx.loadbalancer.server.port=80"
       restart_policy:
         condition: any
@@ -88,7 +88,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.app.entrypoints=http"
-        - "traefik.http.routers.app.rule=Host(`localhost`)"
+        - "traefik.http.routers.app.rule=Host(`159.89.29.83`)"
         - "traefik.http.services.app.loadbalancer.server.port=8080"
       restart_policy:
         condition: any
@@ -136,7 +136,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.admin.entrypoints=http"
-        - "traefik.http.routers.admin.rule=Host(`localhost`) && PathPrefix(`/admin`)"
+        - "traefik.http.routers.admin.rule=Host(`159.89.29.83`) && PathPrefix(`/admin`)"
         - "traefik.http.services.admin.loadbalancer.server.port=8000"
       restart_policy:
         condition: any

@@ -36,7 +36,7 @@ services:
       - "traefik.http.routers.app.rule=Host(`localhost`)"
       - "traefik.http.services.app.loadbalancer.server.port=8080"
     volumes:
-      - ./app:/go/src/app
+      - ./app/:/go/src/app/
       - media:/go/src/app/media/
       - ./secrets/.env:/go/src/app/.env
     depends_on:

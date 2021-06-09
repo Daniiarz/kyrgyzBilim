@@ -64,10 +64,10 @@ services:
         condition: any
 
   app:
-    image: registry.digitalocean.com/kyrgyz-bilim-registry/kyrgyz-bilim-api/api:latest
+    image: 127.0.0.1:5000/app
     build:
       target: prod
-      context: app/
+      context: KyrgyzBilimApi/
     environment:
       - POSTGRES_PASSWORD=dbCXeDTR5vFhZkxRCq
       - POSTGRES_DB=kyrgyzBilim
@@ -118,9 +118,9 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   admin:
-    image: registry.digitalocean.com/kyrgyz-bilim-registry/kyrgyz-bilim-admin/admin
+    image: 127.0.0.1:5000/admin
     build:
-      context: admin/
+      context: ../KyrgyzBilimAdmin/
     secrets:
       - source: env-file
         target: /usr/src/admin/.env

@@ -6,4 +6,8 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY . /app
+COPY . .
+
+RUN chmod 755 start-server.sh
+
+CMD ["/usr/src/admin/start-server.sh"]

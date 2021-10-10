@@ -4,6 +4,7 @@ WORKDIR /go/src/app
 
 ENV GO111MODULE=on
 
+RUN apk add upx
 RUN go get github.com/cespare/reflex
 RUN go get github.com/json-iterator/go
 
@@ -14,14 +15,18 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -tags=jsointer -o run .
+RUN CGO_ENABLED=0 go build -tags=jsointer -o run .
 
-FROM alpine:latest
+RUN upx ./run
+
+FROM alpine:latest as prod
 RUN apk --no-cache add ca-certificates
-WORKDIR /root/
+
+WORKDIR /usr/src/app
 
 #Copy executable from builder
-COPY --from=builder /go/src/app/run .
+COPY --from=builder /go/src/app/run /usr/src/app/run
+
 
 ENV GIN_MODE=release
 

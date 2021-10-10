@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"kyrgyz-bilim/repository/database"
 	"kyrgyz-bilim/routes"
 	"log"
@@ -18,6 +19,10 @@ type globalRoutes struct {
 }
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	database.DB = database.Connect()
 	database.SetupDB(database.DB)
 	r := globalRoutes{

@@ -57,8 +57,8 @@ func (db *userRepository) Update(user *entity.User) {
 
 func (db *userRepository) Create(user *entity.User) {
 	user.IsActive = true
-	user.IsStaff = true
-	user.IsSuperuser = true
+	user.IsStaff = false
+	user.IsSuperuser = false
 	user.DateJoined = time.Now()
 	user.LastLogin = time.Now()
 	db.connection.Save(user)

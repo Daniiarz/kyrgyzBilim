@@ -3,3 +3,5 @@ gunicorn==20.1.0
 psycopg2-binary==2.8.6
 python-decouple==3.3
 Pillow==8.2.0
+python-dotenv==0.17.1
+django-admin-sortable2==1.0.2

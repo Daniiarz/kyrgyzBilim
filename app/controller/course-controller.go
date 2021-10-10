@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/repository"
 	"kyrgyz-bilim/service"
 	"net/http"
@@ -40,8 +41,26 @@ func DetailedTopic(c *gin.Context) {
 	id := c.Param("id")
 	if sectionId, err := strconv.Atoi(id); err == nil {
 		newService := service.NewCourseService()
-		topic := newService.TopicsById(sectionId)
-		c.JSON(http.StatusOK, topic)
+		param, _ := c.Get("user")
+		user := param.(*entity.User)
+		subTopics := newService.GetSubtopics(sectionId, user)
+		c.JSON(http.StatusOK, subTopics)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be integer"})
+	}
+}
+
+func CountProgress(c *gin.Context) {
+	id := c.Param("id")
+	if subTopicId, err := strconv.Atoi(id); err == nil {
+		param, _ := c.Get("user")
+		user := param.(*entity.User)
+		newService := service.NewCourseService()
+		err = newService.CountProgress(user, subTopicId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.Error{Err: err})
+		}
+		c.JSON(http.StatusOK, gin.H{})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be integer"})
 	}

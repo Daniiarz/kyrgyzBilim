@@ -11,6 +11,10 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 		accessToken := strings.Split(header, " ")
+		if len(accessToken) < 2 {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
 		user, err := service.ValidateToken(accessToken[1])
 		if err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)

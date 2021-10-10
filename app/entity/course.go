@@ -1,23 +1,22 @@
 package entity
 
 import (
-	"fmt"
 	"gorm.io/gorm"
-	"os"
 )
 
 type Course struct {
-	ID          int    `json:"id,omitempty" `
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
+	ID          int    `json:"id," `
+	Name        string `json:"name,"`
+	Description string `json:"description,"`
 }
 
 type Section struct {
 	ID       int     `json:"id,omitempty"`
 	Course   Course  `json:"-" gorm:"foreignKey:CourseID"`
 	CourseID int     `json:"-" gorm:"course_id"`
-	Name     string  `json:"name,omitempty" gorm:"name"`
-	Icon     string  `json:"icon,omitempty" gorm:"icon"`
+	Name     string  `json:"name," gorm:"name"`
+	Icon     string  `json:"icon," gorm:"icon"`
+	Type     string  `json:"type,"`
 	Topic    []Topic `json:"topics"`
 }
 
@@ -25,21 +24,23 @@ type Topic struct {
 	ID             int        `json:"id,omitempty" gorm:"id"`
 	SectionID      int        `json:"-"`
 	Section        Section    `json:"-" gorm:"foreignKey:SectionID"`
-	Name           string     `json:"name,omitempty"`
-	TranslatedName string     `json:"translated_name,omitempty" gorm:"translated_name"`
-	Icon           string     `json:"icon,omitempty" media:"default"`
-	Type           string     `json:"type,omitempty"`
-	SubTopic       []SubTopic `json:"sub_topics,omitempty"`
+	Name           string     `json:"name,"`
+	TranslatedName string     `json:"translated_name," gorm:"translated_name"`
+	Icon           string     `json:"icon," media:"default"`
+	Type           string     `json:"type,"`
+	SubTopic       []SubTopic `json:"sub_topics,"`
 }
 
 type SubTopic struct {
 	ID             int    `json:"id,omitempty"`
-	TopicId        int    `json:"-	"`
+	TopicId        int    `json:"-"`
 	Topic          Topic  `json:"-" gorm:"foreignKey:TopicId"`
-	Text           string `json:"text,omitempty"`
-	TranslatedText string `json:"translated_text,omitempty"`
-	Audio          string `json:"audio,omitempty"`
-	Image          string `json:"image,omitempty"`
+	Text           string `json:"text,"`
+	TranslatedText string `json:"translated_text,"`
+	Audio          string `json:"audio,"`
+	Image          string `json:"image,"`
+	Order          int    `json:"order"`
+	Completed      bool   `json:"completed"`
 }
 
 func (Course) TableName() string {
@@ -51,7 +52,9 @@ func (Section) TableName() string {
 }
 
 func (s *Section) AfterFind(tx *gorm.DB) (err error) {
-	s.Icon = fmt.Sprintf("%v/%v", os.Getenv("MEDIA_URL"), s.Icon)
+	if s.Icon != "" {
+		s.Icon = SetMediaUrl(s.Icon)
+	}
 	return
 }
 
@@ -60,7 +63,9 @@ func (Topic) TableName() string {
 }
 
 func (t *Topic) AfterFind(tx *gorm.DB) (err error) {
-	t.Icon = fmt.Sprintf("%v/%v", os.Getenv("MEDIA_URL"), t.Icon)
+	if t.Icon != "" {
+		t.Icon = SetMediaUrl(t.Icon)
+	}
 	return
 }
 
@@ -69,6 +74,11 @@ func (SubTopic) TableName() string {
 }
 
 func (s *SubTopic) AfterFind(tx *gorm.DB) (err error) {
-	s.Image = fmt.Sprintf("%v/%v", os.Getenv("MEDIA_URL"), s.Image)
+	if s.Image != "" {
+		s.Image = SetMediaUrl(s.Image)
+	}
+	if s.Audio != "" {
+		s.Audio = SetMediaUrl(s.Audio)
+	}
 	return
 }

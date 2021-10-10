@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/repository/database"
+	"log"
 )
 
 type CourseRepository interface {
@@ -12,6 +14,10 @@ type CourseRepository interface {
 	GetSections(id int) []*entity.Section
 	GetTopics(id int) []entity.Topic
 	GetTopic(id int) *entity.Topic
+	GetSubtopics(id int, user *entity.User) []entity.SubTopic
+	AppendSubTopicToUser(user *entity.User, subTopic *entity.SubTopic) error
+	GetSubtopicById(id int) *entity.SubTopic
+	RecountUserProgress(user *entity.User)
 }
 
 type courseRepository struct {
@@ -52,4 +58,42 @@ func (db courseRepository) GetTopic(id int) *entity.Topic {
 	topic := &entity.Topic{}
 	db.connection.Where("id = ?", id).Preload("SubTopic").Find(&topic)
 	return topic
+}
+
+func (db courseRepository) GetSubtopics(id int, user *entity.User) []entity.SubTopic {
+	var subTopics []entity.SubTopic
+	db.connection.Raw(""+
+		"SELECT s.id, s.text, s.translated_text, s.audio, s.image, s.order, CAST(u.id::int as BOOLEAN) AS completed "+
+		"FROM sub_topics as s "+
+		"LEFT  JOIN user_subtopics as us "+
+		"ON s.id=us.sub_topic_id "+
+		"AND us.user_id = ? "+
+		"LEFT JOIN users as u "+
+		"ON us.user_id=u.id ", user.Id).Scan(&subTopics)
+	return subTopics
+}
+
+func (db courseRepository) GetSubtopicById(id int) *entity.SubTopic {
+	subTopic := &entity.SubTopic{}
+	db.connection.Where("id = ?", id).Find(&subTopic)
+	return subTopic
+}
+
+func (db courseRepository) AppendSubTopicToUser(user *entity.User, subTopic *entity.SubTopic) error {
+	err := db.connection.Model(&user).Association("SubTopics").Append(subTopic)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	return nil
+}
+
+func (db courseRepository) RecountUserProgress(user *entity.User) {
+	var subTopicCount int64
+	userSubTopics := db.connection.Model(&user).Association("SubTopics").Count()
+	tableName := entity.SubTopic{}.TableName()
+	db.connection.Table(tableName).Count(&subTopicCount)
+	fmt.Println(subTopicCount)
+	fmt.Println(userSubTopics)
+	user.Progress = float64(userSubTopics) / float64(subTopicCount) * 100
+	db.connection.Save(&user)
 }

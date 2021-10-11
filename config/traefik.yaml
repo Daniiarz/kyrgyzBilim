@@ -5,6 +5,8 @@ entryPoints:
   https:
     address: ":443"
 
+accessLog:
+
 api:
   dashboard: true
   insecure: true

@@ -22,11 +22,12 @@ services:
     build:
       context: app/
       target: prod
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.entrypoints=http"
-      - "traefik.http.routers.app.rule=Host(`165.232.76.19`)"
-      - "traefik.http.services.app.loadbalancer.server.port=8080"
+      labels: [
+          "traefik.enable=true",
+          "traefik.http.routers.app.entrypoints=http",
+          "traefik.http.routers.app.rule=Host(`165.232.76.19`)",
+          "traefik.http.services.app.loadbalancer.server.port=8080"
+      ]
     volumes:
       - media:/go/src/app/media/
     depends_on:
@@ -34,21 +35,24 @@ services:
       - reverse-proxy
 
   nginx:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nginx.entrypoints=http"
-      - "traefik.http.routers.nginx.rule=Host(`165.232.76.19`) && PathPrefix(`/media`, `/static`)"
-      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+    labels: [
+        "traefik.enable=true",
+        "traefik.http.routers.nginx.entrypoints=http",
+        "traefik.http.routers.nginx.rule=Host(`165.232.76.19`) && PathPrefix(`/media`, `/static`)",
+        "traefik.http.services.nginx.loadbalancer.server.port=80"
+    ]
+
 
   admin:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.admin.entrypoints=http"
-      - "traefik.http.routers.admin.rule=Host(`165.232.76.19`) && PathPrefix(`/admin`)"
-      - "traefik.http.services.admin.loadbalancer.server.port=8000"
+    labels: [
+        "traefik.enable=true",
+        "traefik.http.routers.admin.entrypoints=http",
+        "traefik.http.routers.admin.rule=Host(`165.232.76.19`) && PathPrefix(`/admin`)",
+        "traefik.http.services.admin.loadbalancer.server.port=8000"
+    ]
     volumes: [
-      "static:/usr/src/admin/static/",
-      "media:/usr/src/admin/media/"
+        "static:/usr/src/admin/static/",
+        "media:/usr/src/admin/media/"
     ]
     command: sh -c "python manage.py collectstatic --noinput && gunicorn -w 3 -b 0.0.0.0:8000 admin.wsgi"
 

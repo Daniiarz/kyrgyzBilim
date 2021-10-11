@@ -9,7 +9,7 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/traefik.yaml:/etc/traefik/traefik.yaml
+      - ./config/traefik_dev.yml:/etc/traefik/traefik.yaml
 
   postgres:
     image: postgres:12-alpine

@@ -5,7 +5,7 @@ entryPoints:
   https:
     address: ":443"
 
-accessLog:
+accessLog: {}
 
 api:
   dashboard: true

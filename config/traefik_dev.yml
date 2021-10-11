@@ -5,9 +5,13 @@ entryPoints:
   https:
     address: ":443"
 
+accessLog: {}
+
 api:
   dashboard: true
   insecure: true
 
 providers:
-  docker: {}
+  docker:
+    exposedByDefault: false
+    endpoint: "unix:///var/run/docker.sock"

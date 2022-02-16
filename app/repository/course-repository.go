@@ -70,7 +70,18 @@ func (db courseRepository) GetSubtopics(id int, user *entity.User) []entity.SubT
 		"AND us.user_id = ? "+
 		"LEFT JOIN users as u "+
 		"ON us.user_id=u.id "+
-		"WHERE s.id = ?", user.Id, id).Scan(&subTopics)
+		"WHERE s.topic_id = ?", user.Id, id).Scan(&subTopics)
+
+	//db.connection.Raw(
+	//	`
+	//		select s.id, s.text, s.translated_text, s.audio, s.image, s.order,
+	//			(case when us.id is not null then true else false end)	as completed from sub_topics as st
+	//		left join (
+	//			select id, user_ud from user_subtopics where user_id = ?
+	//		) as us
+	//		on st.id=us.sub_topic_id
+	//		where st.topic_id = ?
+	//	`, user.id, id).Scan(&subTopics)
 	return subTopics
 }
 

@@ -27,7 +27,7 @@ type Topic struct {
 	Name           string     `json:"name,"`
 	TranslatedName string     `json:"translated_name," gorm:"translated_name"`
 	Icon           string     `json:"icon," media:"default"`
-	Type           string     `json:"type,"`
+	Type           striding   `json:"type,"`
 	SubTopic       []SubTopic `json:"sub_topics,"`
 }
 

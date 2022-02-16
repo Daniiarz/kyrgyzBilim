@@ -69,7 +69,8 @@ func (db courseRepository) GetSubtopics(id int, user *entity.User) []entity.SubT
 		"ON s.id=us.sub_topic_id "+
 		"AND us.user_id = ? "+
 		"LEFT JOIN users as u "+
-		"ON us.user_id=u.id ", user.Id).Scan(&subTopics)
+		"ON us.user_id=u.id "+
+		"WHERE s.id = ?", user.Id, id).Scan(&subTopics)
 	return subTopics
 }
 

@@ -35,7 +35,7 @@ services:
     depends_on:
       - postgres
       - reverse-proxy
-    command: "./run"
+    command: "EXPORT MEDIA_URL=164.90.234.21 & ./run"
 
   nginx:
     labels: [

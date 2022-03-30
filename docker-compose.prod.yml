@@ -28,11 +28,14 @@ services:
           "traefik.http.routers.app.rule=Host(`165.232.76.19`)",
           "traefik.http.services.app.loadbalancer.server.port=8080"
       ]
-    volumes:
-      - media:/go/src/app/media/
+    volumes: [
+        "media:/go/src/app/media/",
+        "./secrets/.env:/usr/src/app/.env"
+    ]
     depends_on:
       - postgres
       - reverse-proxy
+    command: "./run"
 
   nginx:
     labels: [

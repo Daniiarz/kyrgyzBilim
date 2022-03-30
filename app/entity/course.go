@@ -1,7 +1,9 @@
 package entity
 
 import (
+	"fmt"
 	"gorm.io/gorm"
+	"os"
 )
 
 type Course struct {
@@ -52,8 +54,9 @@ func (Section) TableName() string {
 }
 
 func (s *Section) AfterFind(tx *gorm.DB) (err error) {
+	mediaUrl := os.Getenv("MEDIA_URL")
 	if s.Icon != "" {
-		s.Icon = SetMediaUrl(s.Icon)
+		s.Icon = fmt.Sprintf("%v/%v", mediaUrl, s.Icon)
 	}
 	return
 }
@@ -63,8 +66,9 @@ func (Topic) TableName() string {
 }
 
 func (t *Topic) AfterFind(tx *gorm.DB) (err error) {
+	mediaUrl := os.Getenv("MEDIA_URL")
 	if t.Icon != "" {
-		t.Icon = SetMediaUrl(t.Icon)
+		t.Icon = fmt.Sprintf("%v/%v", mediaUrl, t.Icon)
 	}
 	return
 }
@@ -74,11 +78,12 @@ func (SubTopic) TableName() string {
 }
 
 func (s *SubTopic) AfterFind(tx *gorm.DB) (err error) {
+	mediaUrl := os.Getenv("MEDIA_URL")
 	if s.Image != "" {
-		s.Image = SetMediaUrl(s.Image)
+		s.Image = fmt.Sprintf("%v/%v", mediaUrl, s.Image)
 	}
 	if s.Audio != "" {
-		s.Audio = SetMediaUrl(s.Audio)
+		s.Audio = fmt.Sprintf("%v/%v", mediaUrl, s.Audio)
 	}
 	return
 }

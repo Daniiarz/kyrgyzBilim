@@ -27,7 +27,7 @@ WORKDIR /usr/src/app
 #Copy executable from builder
 COPY --from=builder /go/src/app/run /usr/src/app/run
 
-
+ENV MEDIA_URL=164.90.234.21
 ENV GIN_MODE=release
 
 CMD ["./run"]

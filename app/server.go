@@ -23,6 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	log.Println(os.Getenv("MEDIA_URL"))
 	_ = os.Setenv("MEDIA_URL", os.Getenv("MEDIA_URL"))
 	database.DB = database.Connect()
 	database.SetupDB(database.DB)

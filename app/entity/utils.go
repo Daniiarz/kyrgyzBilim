@@ -7,7 +7,7 @@ import (
 )
 
 func SetMediaUrl(s string) string {
-	_ = godotenv.Load(".env")
+	_ = godotenv.Load("/usr/src/app/.env")
 	url := fmt.Sprintf("%v/%v", os.Getenv("MEDIA_URL"), s)
 	return url
 }

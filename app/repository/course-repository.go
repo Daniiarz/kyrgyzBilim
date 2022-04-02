@@ -63,7 +63,7 @@ func (db courseRepository) GetTopic(id int) *entity.Topic {
 func (db courseRepository) GetSubtopics(id int, user *entity.User) []entity.SubTopic {
 	var subTopics []entity.SubTopic
 	db.connection.Raw(""+
-		"SELECT s.id, s.text, s.translated_text, concat(?::text, '/', s.audio) as audio, s.image, s.order, CAST(u.id::int as BOOLEAN) AS completed "+
+		"SELECT s.id, s.text, s.translated_text, concat(?::text, '//'::text, s.audio) as audio, s.image, s.order, CAST(u.id::int as BOOLEAN) AS completed "+
 		"FROM sub_topics as s "+
 		"LEFT  JOIN user_subtopics as us "+
 		"ON s.id=us.sub_topic_id "+

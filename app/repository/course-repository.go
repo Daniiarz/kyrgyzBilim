@@ -72,7 +72,7 @@ func (db courseRepository) GetSubtopics(id int, user *entity.User) []entity.SubT
 		"LEFT JOIN users as u "+
 		"ON us.user_id=u.id "+
 		"WHERE s.topic_id = ?", os.Getenv("MEDIA_URL"), user.Id, id).Scan(&subTopics)
-
+	log.Println(os.Getenv("MEDIA_URL"))
 	//db.connection.Raw(
 	//	`
 	//		select s.id, s.text, s.translated_text,

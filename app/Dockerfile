@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 go build -tags=jsointer -o run .
 
 RUN upx ./run
 
-FROM alpine:latest as prod
+FROM debian:stable-slim as prod
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /usr/src/app

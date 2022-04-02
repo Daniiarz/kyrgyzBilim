@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 go build -tags=jsointer -o run .
 RUN upx ./run
 
 FROM debian:stable-slim as prod
-RUN apk --no-cache add ca-certificates
+RUN apt --no-cache install ca-certificates
 
 WORKDIR /usr/src/app
 

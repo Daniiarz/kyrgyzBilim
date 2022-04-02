@@ -6,6 +6,7 @@ import (
 	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/repository/database"
 	"log"
+	"os"
 )
 
 type CourseRepository interface {
@@ -62,26 +63,26 @@ func (db courseRepository) GetTopic(id int) *entity.Topic {
 
 func (db courseRepository) GetSubtopics(id int, user *entity.User) []entity.SubTopic {
 	var subTopics []entity.SubTopic
-	db.connection.Raw(""+
-		"SELECT s.id, s.text, s.translated_text, s.audio, s.image, s.order, CAST(u.id::int as BOOLEAN) AS completed "+
-		"FROM sub_topics as s "+
-		"LEFT  JOIN user_subtopics as us "+
-		"ON s.id=us.sub_topic_id "+
-		"AND us.user_id = ? "+
-		"LEFT JOIN users as u "+
-		"ON us.user_id=u.id "+
-		"WHERE s.topic_id = ?", user.Id, id).Scan(&subTopics)
+	//db.connection.Raw(""+
+	//	"SELECT s.id, s.text, s.translated_text, s.audio, s.image, s.order, CAST(u.id::int as BOOLEAN) AS completed "+
+	//	"FROM sub_topics as s "+
+	//	"LEFT  JOIN user_subtopics as us "+
+	//	"ON s.id=us.sub_topic_id "+
+	//	"AND us.user_id = ? "+
+	//	"LEFT JOIN users as u "+
+	//	"ON us.user_id=u.id "+
+	//	"WHERE s.topic_id = ?", user.Id, id).Scan(&subTopics)
 
-	//db.connection.Raw(
-	//	`
-	//		select s.id, s.text, s.translated_text, s.audio, s.image, s.order,
-	//			(case when us.id is not null then true else false end)	as completed from sub_topics as st
-	//		left join (
-	//			select id, user_ud from user_subtopics where user_id = ?
-	//		) as us
-	//		on st.id=us.sub_topic_id
-	//		where st.topic_id = ?
-	//	`, user.id, id).Scan(&subTopics)
+	db.connection.Raw(
+		`
+			select s.id, s.text, s.translated_text, 
+			(case when audio = '' then null else concat(%s, s.audio) end) as audio,
+			s.image, s.order,
+				(case when us.id is not null then true else false end)	as completed from sub_topics as st
+			left join user_subtopics 
+			on st.id=us.sub_topic_id and us.user_id = ?
+			where st.topic_id = ?
+		`, os.Getenv("MEDIA_URL"), user.Id, id).Scan(&subTopics)
 	return subTopics
 }
 

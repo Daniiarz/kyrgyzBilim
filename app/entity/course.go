@@ -10,6 +10,14 @@ type Course struct {
 	ID          int    `json:"id," `
 	Name        string `json:"name,"`
 	Description string `json:"description,"`
+	Progress    int    `json:"progress" gorm:"-"`
+}
+
+type CourseProgress struct {
+	ID          int    `json:"id," `
+	Name        string `json:"name,"`
+	Description string `json:"description,"`
+	Progress    int    `json:"progress"`
 }
 
 type Section struct {

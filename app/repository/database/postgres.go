@@ -55,7 +55,10 @@ func SetupDB(db *gorm.DB) {
 	err = db.AutoMigrate(&entity.Section{})
 	err = db.AutoMigrate(&entity.Topic{})
 	err = db.AutoMigrate(&entity.SubTopic{})
+	err = db.AutoMigrate(&entity.UserSubtopic{})
+	err = db.SetupJoinTable(&entity.User{}, "SubTopics", &entity.UserSubtopic{})
 	if err != nil {
+		println(err.Error())
 		panic("Can't migrate database")
 	}
 }

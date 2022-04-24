@@ -4,20 +4,18 @@ import (
 	"gorm.io/gorm"
 	"kyrgyz-bilim/entity"
 	"kyrgyz-bilim/repository/database"
-	"log"
 	"os"
 )
 
 type CourseRepository interface {
-	All() []entity.Course
+	All(user *entity.User) []entity.CourseProgress
 	GetByID(id int) *entity.Course
 	GetSections(id int) []*entity.Section
 	GetTopics(id int) []entity.Topic
 	GetTopic(id int) *entity.Topic
 	GetSubtopics(id int, user *entity.User) []entity.SubTopic
-	AppendSubTopicToUser(user *entity.User, subTopic *entity.SubTopic) error
+	AppendSubTopicToUser(user *entity.User, subTopic *entity.SubTopic, courseId int) error
 	GetSubtopicById(id int) *entity.SubTopic
-	RecountUserProgress(user *entity.User)
 }
 
 type courseRepository struct {
@@ -30,9 +28,16 @@ func NewCourseRepository() CourseRepository {
 	}
 }
 
-func (db *courseRepository) All() []entity.Course {
-	var courses []entity.Course
-	db.connection.Find(&courses)
+func (db *courseRepository) All(user *entity.User) []entity.CourseProgress {
+	var courses []entity.CourseProgress
+	db.connection.Raw(`
+		select *,
+			   (((select count(1) as count
+				  from user_subtopics
+				  where user_subtopics.course_id = courses.id and user_id = 1)::float /
+				 (select count(1) as count from sub_topics)) * 100)::int as progress
+		from courses
+	`, user.Id).Scan(&courses)
 	return courses
 }
 
@@ -71,17 +76,6 @@ func (db courseRepository) GetSubtopics(id int, user *entity.User) []entity.SubT
 		"LEFT JOIN users as u "+
 		"ON us.user_id=u.id "+
 		"WHERE s.topic_id = ?", os.Getenv("MEDIA_URL"), user.Id, id).Scan(&subTopics)
-	log.Println(os.Getenv("MEDIA_URL"))
-	//db.connection.Raw(
-	//	`
-	//		select s.id, s.text, s.translated_text,
-	//		(case when audio = '' then null else concat(%s, s.audio) end) as audio,
-	//		s.image, s.order,
-	//			(case when us.id is not null then true else false end)	as completed from sub_topics as st
-	//		left join user_subtopics
-	//		on st.id=us.sub_topic_id and us.user_id = ?
-	//		where st.topic_id = ?
-	//	`, os.Getenv("MEDIA_URL"), user.Id, id).Scan(&subTopics)
 	return subTopics
 }
 
@@ -91,19 +85,14 @@ func (db courseRepository) GetSubtopicById(id int) *entity.SubTopic {
 	return subTopic
 }
 
-func (db courseRepository) AppendSubTopicToUser(user *entity.User, subTopic *entity.SubTopic) error {
-	err := db.connection.Model(&user).Association("SubTopics").Append(subTopic)
+func (db courseRepository) AppendSubTopicToUser(user *entity.User, subTopic *entity.SubTopic, courseId int) error {
+	userSubtopic := entity.UserSubtopic{
+		UserId:     user.Id,
+		SubTopicId: subTopic.ID,
+		CourseId:   courseId,
+	}
+	err := db.connection.Create(&userSubtopic)
 	if err != nil {
-		log.Fatal(err.Error())
 	}
 	return nil
-}
-
-func (db courseRepository) RecountUserProgress(user *entity.User) {
-	var subTopicCount int64
-	userSubTopics := db.connection.Model(&user).Association("SubTopics").Count()
-	tableName := entity.SubTopic{}.TableName()
-	db.connection.Table(tableName).Count(&subTopicCount)
-	user.Progress = float64(userSubTopics) / float64(subTopicCount) * 100
-	db.connection.Save(&user)
 }

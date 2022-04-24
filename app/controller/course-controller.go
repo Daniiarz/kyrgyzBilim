@@ -11,7 +11,9 @@ import (
 
 func ListCourses(c *gin.Context) {
 	connection := repository.NewCourseRepository()
-	courses := connection.All()
+	param, _ := c.Get("user")
+	user := param.(*entity.User)
+	courses := connection.All(user)
 	c.JSON(http.StatusOK, courses)
 }
 
@@ -55,8 +57,14 @@ func CountProgress(c *gin.Context) {
 	if subTopicId, err := strconv.Atoi(id); err == nil {
 		param, _ := c.Get("user")
 		user := param.(*entity.User)
+		courseId := &entity.CourseId{}
+		obj, ok := service.DataBind(c, courseId)
+		if !ok {
+			c.JSON(http.StatusBadRequest, obj.(gin.H))
+			return
+		}
 		newService := service.NewCourseService()
-		err = newService.CountProgress(user, subTopicId)
+		err = newService.CountProgress(user, subTopicId, obj.(*entity.CourseId).CourseId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.Error{Err: err})
 		}

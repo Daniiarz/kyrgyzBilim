@@ -6,11 +6,10 @@ import (
 )
 
 type CourseService interface {
-	AllCourses() []entity.Course
 	TopicsById(id int) []entity.Topic
 	GetSubtopics(id int, user *entity.User) []entity.SubTopic
 	GetSingleTopic(id int) *entity.SubTopic
-	CountProgress(user *entity.User, subTopicId int) error
+	CountProgress(user *entity.User, subTopicId int, courseId int) error
 }
 
 type courseService struct {
@@ -22,10 +21,6 @@ func NewCourseService() CourseService {
 	return courseService{
 		repository: repo,
 	}
-}
-
-func (s courseService) AllCourses() []entity.Course {
-	return s.repository.All()
 }
 
 func (s courseService) TopicsById(id int) []entity.Topic {
@@ -43,12 +38,11 @@ func (s courseService) GetSingleTopic(id int) *entity.SubTopic {
 	return subTopic
 }
 
-func (s courseService) CountProgress(user *entity.User, subTopicId int) error {
+func (s courseService) CountProgress(user *entity.User, subTopicId int, courseId int) error {
 	subTopic := s.repository.GetSubtopicById(subTopicId)
-	err := s.repository.AppendSubTopicToUser(user, subTopic)
-	s.repository.RecountUserProgress(user)
+	err := s.repository.AppendSubTopicToUser(user, subTopic, courseId)
 	if err != nil {
-		return err
+		println(err.Error())
 	}
 	return nil
 }

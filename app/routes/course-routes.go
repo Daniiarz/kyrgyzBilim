@@ -9,7 +9,7 @@ import (
 func CourseRoutes(rg *gin.RouterGroup) {
 	group := rg.Group("")
 	{
-		group.GET("courses", controller.ListCourses)
+		group.GET("courses", utils.AuthMiddleware(), controller.ListCourses)
 		group.GET("courses/:id/sections", controller.ListSections)
 		group.GET("sections/:id/topics", controller.ListTopics)
 		group.GET("topics/:id", utils.AuthMiddleware(), controller.DetailedTopic)

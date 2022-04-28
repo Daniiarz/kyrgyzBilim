@@ -34,9 +34,14 @@ func (db *courseRepository) All(user *entity.User) []entity.CourseProgress {
 		select *,
 			   (((select count(1) as count
 				  from user_subtopics
-				  where user_subtopics.course_id = courses.id and user_id = 1)::float /
-				 (select count(1) as count from sub_topics)) * 100)::int as progress
-		from courses
+				  where user_subtopics.course_id = cs.id and user_id = 1)::float /
+				 (select count(1) as count from sub_topics
+					join topics on sub_topics.topic_id = topics.id
+					join sections on topics.section_id = sections.id
+					join courses on sections.course_id = courses.id
+					where courses.id = cs.id
+					)) * 100)::int as progress
+		from courses cs
 	`, user.Id).Scan(&courses)
 	return courses
 }

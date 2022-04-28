@@ -68,7 +68,7 @@ func CountProgress(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.Error{Err: err})
 		}
-		c.JSON(http.StatusOK, gin.H{})
+		c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id must be integer"})
 	}
